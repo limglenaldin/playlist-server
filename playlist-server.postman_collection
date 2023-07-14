@@ -1,0 +1,171 @@
+{
+	"info": {
+		"_postman_id": "f338b9bd-faa4-4f96-8b72-9b04c834db09",
+		"name": "Homework - Playlist Server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6960841"
+	},
+	"item": [
+		{
+			"name": "Get All Playlist",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/v1/playlists",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"v1",
+						"playlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Store Song to Playlist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"dreaming\",\r\n    \"artists\": [\"MY FIRST STORY\"],\r\n    \"url\": \"https://open.spotify.com/track/7tEPVlqhrK9Stc7rIQzFyk?si=f49c18fea1ac440e\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/playlists",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"v1",
+						"playlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Playlist",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/v1/playlists/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"v1",
+						"playlists",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Play / Pause Song",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/v1/playlists/:id/play?state=false",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"v1",
+						"playlists",
+						":id",
+						"play"
+					],
+					"query": [
+						{
+							"key": "state",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Song in Playlist",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"dreaming of you\",\r\n    \"artists\": [\"MY FIRST STORY\"],\r\n    \"url\": \"https://open.spotify.com/track/61AYCZrkESwuQKUULP0fgF?si=b4691f86d72a4e55e\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/v1/playlists/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"v1",
+						"playlists",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Song Playlist",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/v1/playlists/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"v1",
+						"playlists",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "54642438-cfe6-404d-a1df-d6aad0772004"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
