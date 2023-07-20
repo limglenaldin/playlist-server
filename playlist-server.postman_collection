@@ -12,13 +12,20 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/v1/playlists",
+					"raw": "{{base_url}}/v1/playlists?mostPlayed=asc",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"v1",
 						"playlists"
+					],
+					"query": [
+						{
+							"key": "mostPlayed",
+							"value": "asc",
+							"description": "asc / desc / inactive"
+						}
 					]
 				}
 			},
@@ -69,7 +76,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
+							"value": "86b29dd4-33ee-40a9-82a9-79f3dc2a8148"
 						}
 					]
 				}
@@ -77,12 +84,12 @@
 			"response": []
 		},
 		{
-			"name": "Play / Pause Song",
+			"name": "Play Song",
 			"request": {
 				"method": "PATCH",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/v1/playlists/:id/play?state=false",
+					"raw": "{{base_url}}/v1/playlists/:id/play",
 					"host": [
 						"{{base_url}}"
 					],
@@ -92,11 +99,31 @@
 						":id",
 						"play"
 					],
-					"query": [
+					"variable": [
 						{
-							"key": "state",
-							"value": "false"
+							"key": "id",
+							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Stop Song",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/v1/playlists/:id/stop",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"v1",
+						"playlists",
+						":id",
+						"stop"
 					],
 					"variable": [
 						{
