@@ -1,192 +1,232 @@
 // Third Party Deps
 import {
-	ReasonPhrases,
 	StatusCodes,
-	getReasonPhrase,
-	getStatusCode,
 } from 'http-status-codes';
-import { v4 as uuidv4 } from 'uuid';
 
 // Custom
 import responseFormatter from "./../../utils/responseFormatter";
-import { playedSchema, playlist, playlistSchema } from "./../model/playlist";
 
-const indexPlaylist = (req, res) => {
-    res.status(StatusCodes.OK)
-            .send(
-                responseFormatter(
+class PlaylistHandler {
+    constructor (playlistSvc, playlistSchema) {
+        this.playlistSvc = playlistSvc;
+        this.playlistSchema = playlistSchema;
+    }
+
+    index = (req, res) => {
+        const mostPlayed = req.query.mostPlayed ? req.query.mostPlayed : null;
+    
+        const { errors, result } = this.playlistSvc.index(mostPlayed);
+    
+        if (errors.length < 1) {
+            return res.status(StatusCodes.OK)
+                .send(responseFormatter(
                     StatusCodes.OK,
                     '',
                     'Successfully get all playlist',
-                    playlist
+                    result
                 ));
-}
+        }
+    
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                'Internal Server Error',
+            ));
+    }
 
-const storePlaylist = (req, res) => {
-    const { error, value } = playlistSchema.validate(req.body);
+    store = (req, res) => {
+        const data = req.body;
+        const { error, value } = this.playlistSchema.validate(data);
     
         if (error === undefined) {
-            const song = {
-                id: uuidv4(),
-                ...value,
-                isPlayed: false,
-            }
-            playlist.push(song);
+            const { errors, result } = this.playlistSvc.store(value)
     
-            res.status(StatusCodes.CREATED)
-                .send(
-                    responseFormatter(
+            if (errors.length < 1) {
+                return res.status(StatusCodes.CREATED)
+                    .send(responseFormatter(
                         StatusCodes.CREATED,
                         '',
                         'Successfully add new song into playlist',
-                        song,
+                        result,
                     ));
+            }
         } else {
-            res.status(StatusCodes.BAD_REQUEST)
-                .send(
-                    responseFormatter(
+            return res.status(StatusCodes.BAD_REQUEST)
+                .send(responseFormatter(
                         StatusCodes.BAD_REQUEST,
                         error.details[0].message,
                         ''
                     ));
         }
-}
-
-const showPlaylist = (req, res) => {
-    const id = req.params.id
-        const pl = playlist.find((p) => {
-            return p.id == id
-        })
     
-        if (pl) {
-            res.status(StatusCodes.OK)
-                .send(
-                    responseFormatter(
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                'Internal Server Error',
+            ));
+    }
+
+    show = (req, res) => {
+        const id = req.params.id;
+    
+        const { errors, result } = this.playlistSvc.show(id);
+    
+        if (errors.length < 1) {
+            return result
+                ? res.status(StatusCodes.OK)
+                    .send(responseFormatter(
                         StatusCodes.OK,
                         '',
-                        'Successfully get all playlist',
-                        pl,
-                    ));
-        } else {
-            res.status(StatusCodes.NOT_FOUND)
-                .send(
-                    responseFormatter(
-                        StatusCodes.NOT_FOUND,
-                        'Oops, data not found',
-                        '',
-                        [],
-                    ));
+                        'Successfully get playlist',
+                        result
+                    ))
+                : res.status(StatusCodes.NOT_FOUND)
+                    .send(responseFormatter(
+                            StatusCodes.NOT_FOUND,
+                            'Oops, data not found',
+                            '',
+                            {},
+                        ));
         }
-}
-
-const updatePlaylist = (req, res) => {
-    const id = req.params.id
-        const plIndex = playlist.findIndex((p) => {
-            return p.id == id
-        })
-        
-        if (plIndex !== -1) {
-            const { error, value } = playlistSchema.validate(req.body);
-            
-            if (error === undefined) {
-                playlist[plIndex] = { ...playlist[plIndex], ...value }
     
-                res.status(StatusCodes.OK)
-                .send(
-                    responseFormatter(
-                        StatusCodes.OK,
-                        '',
-                        `Successfully update song`,
-                        playlist[plIndex],
-                    ));
-            } else {
-                res.status(StatusCodes.BAD_REQUEST)
-                .send(
-                    responseFormatter(
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                'Internal Server Error',
+            ));
+    }
+
+    update = (req, res) => {
+        const id = req.params.id;
+        const body = req.body
+    
+        const { error, value } = this.playlistSchema.validate(body);
+    
+        if (error === undefined) {
+            const { errors, result } = this.playlistSvc.update(id, value);
+    
+            if (errors.length < 1) {
+                return result
+                    ? res.status(StatusCodes.OK)
+                        .send(responseFormatter(
+                            StatusCodes.OK,
+                            '',
+                            'Successfully update song',
+                            result
+                        ))
+                    : res.status(StatusCodes.NOT_FOUND)
+                        .send(responseFormatter(
+                                StatusCodes.NOT_FOUND,
+                                'Oops, data not found',
+                                '',
+                                {},
+                            ));
+            }
+        } else {
+            return res.status(StatusCodes.BAD_REQUEST)
+                .send(responseFormatter(
                         StatusCodes.BAD_REQUEST,
                         error.details[0].message,
                         ''
                     ));
-            }
-        } else {
-            res.status(StatusCodes.NOT_FOUND)
-                .send(
-                    responseFormatter(
-                        StatusCodes.NOT_FOUND,
-                        'Oops, data not found',
-                        '',
-                        [],
-                    ));
         }
-}
-
-const destroyPlaylist = (req, res) => {
-    const id = req.params.id
-        const plIndex = playlist.findIndex((p) => {
-            return p.id == id
-        })
-        
-        if (plIndex !== -1) {
-            playlist.splice(plIndex, 1)[0];
-            res.status(StatusCodes.OK)
-                .send(
-                    responseFormatter(
-                        StatusCodes.OK,
-                        '',
-                        'Successfully remove song from playlist'
-                    ));
-        } else {
-            res.status(StatusCodes.NOT_FOUND)
-                .send(
-                    responseFormatter(
-                        StatusCodes.NOT_FOUND,
-                        'Oops, data not found',
-                        '',
-                        [],
-                    ));
-        }
-}
-
-const playSong = (req, res) => {
-    const id = req.params.id
-        const pl = playlist.find((p) => {
-            return p.id == id
-        })
-        
-        if (pl) {
-            const { error, value } = playedSchema.validate(req.query.state)
-            
-            if (error === undefined) {
-                pl.isPlayed = value
     
-                res.status(StatusCodes.OK)
-                .send(
-                    responseFormatter(
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                'Internal Server Error',
+            ));
+    }
+
+    destroy = (req, res) => {
+        const id = req.params.id
+    
+        const { errors, result } = this.playlistSvc.destroy(id);
+    
+        if (errors.length < 1) {
+            return result
+                ? res.status(StatusCodes.OK)
+                    .send(responseFormatter(
                         StatusCodes.OK,
                         '',
-                        `Successfully ${value ? 'played' : 'pause'} ${pl.title}`,
-                        pl,
-                    ));
-            } else {
-                res.status(StatusCodes.BAD_REQUEST)
-                .send(
-                    responseFormatter(
-                        StatusCodes.BAD_REQUEST,
-                        "Param \"play\" must be a boolean",
-                        ''
-                    ));
-            }
-            
-        } else {
-            res.status(StatusCodes.NOT_FOUND)
-                .send(
-                    responseFormatter(
-                        StatusCodes.NOT_FOUND,
-                        'Oops, data not found',
-                        '',
-                        [],
-                    ));
+                        'Successfully remove song from playlist',
+                        {}
+                    ))
+                : res.status(StatusCodes.NOT_FOUND)
+                    .send(responseFormatter(
+                            StatusCodes.NOT_FOUND,
+                            'Oops, data not found',
+                            '',
+                            {},
+                        ));
         }
+    
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                'Internal Server Error',
+            ));
+    }
+
+    play = (req, res) => {
+        const id = req.params.id;
+
+        const { errors, result } = this.playlistSvc.play(id);
+
+        if (errors.length < 1) {
+            return result
+                ? res.status(StatusCodes.OK)
+                    .send(responseFormatter(
+                        StatusCodes.OK,
+                        '',
+                        `Successfully played ${result.title}`,
+                        result
+                    ))
+                : res.status(StatusCodes.NOT_FOUND)
+                    .send(responseFormatter(
+                            StatusCodes.NOT_FOUND,
+                            'Oops, data not found',
+                            '',
+                            {},
+                        ));
+        }
+    
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                'Internal Server Error',
+            ));
+    }
+
+    stop = (req, res) => {
+        const id = req.params.id;
+
+        const { errors, result } = this.playlistSvc.stop(id);
+
+        if (errors.length < 1) {
+            return result
+                ? res.status(StatusCodes.OK)
+                    .send(responseFormatter(
+                        StatusCodes.OK,
+                        '',
+                        `Successfully stop ${result.title}`,
+                        result
+                    ))
+                : res.status(StatusCodes.NOT_FOUND)
+                    .send(responseFormatter(
+                            StatusCodes.NOT_FOUND,
+                            'Oops, data not found',
+                            '',
+                            {},
+                        ));
+        }
+    
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                'Internal Server Error',
+            ));
+    }
 }
 
-export { indexPlaylist, storePlaylist, showPlaylist, updatePlaylist, destroyPlaylist, playSong }
+export default PlaylistHandler

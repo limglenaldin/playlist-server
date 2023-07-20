@@ -1,25 +1,32 @@
 // Third Party Deps
 import express from "express";
 
-// Handler
-import { destroyPlaylist, indexPlaylist, playSong, showPlaylist, storePlaylist, updatePlaylist } from '../handler/playlistHandler';
+// Custom
+import { PlaylistModel, playlistSchema } from "../model/playlist";
+import PlaylistService from "../services/playlistService";
+import PlaylistHandler from "../handler/playlistHandler";
+
+const playlistRepository = new PlaylistModel();
+const playlistService = new PlaylistService(playlistRepository);
+const playlistHandler = new PlaylistHandler(playlistService, playlistSchema)
 
 const playlistRouter = express.Router();
 
 // Index
-playlistRouter.get('/playlists', indexPlaylist)
+playlistRouter.get('/playlists', playlistHandler.index);
 
 // Store
-playlistRouter.post('/playlists', storePlaylist)
+playlistRouter.post('/playlists', playlistHandler.store);
 
 // Show
-playlistRouter.get('/playlists/:id', showPlaylist)
+playlistRouter.get('/playlists/:id', playlistHandler.show)
 
 // Update
-playlistRouter.put('/playlists/:id', updatePlaylist)
-playlistRouter.patch('/playlists/:id/play', playSong)
+playlistRouter.put('/playlists/:id', playlistHandler.update)
+playlistRouter.patch('/playlists/:id/play', playlistHandler.play)
+playlistRouter.patch('/playlists/:id/stop', playlistHandler.stop)
 
 // Delete
-playlistRouter.delete('/playlists/:id', destroyPlaylist)
+playlistRouter.delete('/playlists/:id', playlistHandler.destroy)
 
 export default playlistRouter;
