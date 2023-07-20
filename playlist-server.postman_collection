@@ -12,7 +12,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/v1/playlists?mostPlayed=asc",
+					"raw": "{{base_url}}/v1/playlists",
 					"host": [
 						"{{base_url}}"
 					],
@@ -24,7 +24,8 @@
 						{
 							"key": "mostPlayed",
 							"value": "asc",
-							"description": "asc / desc / inactive"
+							"description": "asc / desc / inactive",
+							"disabled": true
 						}
 					]
 				}
@@ -102,7 +103,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
+							"value": "31e3839a-24fc-4a43-9282-4d306bef6d51"
 						}
 					]
 				}
@@ -128,7 +129,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
+							"value": "4b81d7e8-0891-4754-9119-f88c131effa81"
 						}
 					]
 				}
@@ -162,7 +163,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "9e01d61a-223e-4cee-a351-91514901f5c1"
+							"value": "ab940b6b-48eb-475c-9b2f-6dc3f31b8bfe"
 						}
 					]
 				}
@@ -187,7 +188,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "54642438-cfe6-404d-a1df-d6aad0772004"
+							"value": "3dc31008-1fcb-489f-b91f-6b69b685a15a"
 						}
 					]
 				}
